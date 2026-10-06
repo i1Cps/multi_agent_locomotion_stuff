@@ -1,3 +1,7 @@
- first pass of env file is done
+<h2 align="center">Emergent competitive behaviour from humanoids trained to sumo wrestle.</h2>
 
-next model position based humanoid looking figures one red, one blue
+https://github.com/user-attachments/assets/25fc353e-779c-4aa3-98aa-d4c2a2da60de
+
+
+
+
