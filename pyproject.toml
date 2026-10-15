@@ -5,9 +5,13 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "distrax>=0.1.9",
     "jax[cuda13]>=0.10.2",
+    "mujoco==3.14.0",
+    "mujoco-mjx[warp]==3.14.0",
+    "mujoco-warp==3.14.0",
     "playground",
 ]
 
 [tool.uv.sources]
-playground = { git = "https://github.com/google-deepmind/mujoco_playground.git", branch = "main" }
+playground = { git = "https://github.com/google-deepmind/mujoco_playground.git", rev = "86bfcd999619ad8d058383feefc1dd16d4cc57a7" }
