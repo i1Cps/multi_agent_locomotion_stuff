@@ -1,1 +1,27 @@
-{}
+{
+  "mjx": {
+    "impl": "warp",
+    "sim_dt": 0.005,
+    "ctrl_dt": 0.02
+  },
+  "ppo": {
+    "num_timesteps": 200000000,
+    "num_evals": 10,
+    "episode_length": 500,
+    "num_minibatches": 32,
+    "unroll_length": 20,
+    "updates_per_batch": 8,
+    "discount": 0.995,
+    "learning_rate": 0.00001,
+    "entropy_cost": 0.01,
+    "clipping_epsilon": 0.2,
+    "gae_lambda": 0.95,
+    "vf_coefficient": 0.5,
+    "num_envs": 4096,
+    "batch_size": 512,
+    "actor_network_layer_sizes": [512, 256, 128],
+    "critic_network_layer_sizes": [512, 256, 128],
+    "seed": 0
+  }
+
+}

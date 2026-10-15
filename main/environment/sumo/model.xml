@@ -1,1 +1,579 @@
-<!-- soon come -->
+<mujoco model="humanoid">
+  <compiler inertiafromgeom="true"/>
+  <!-- Solver iteration limits are set in env.py for training and playback -->
+  <option timestep="0.005" solver="Newton" integrator="implicitfast"/>
+  <statistic center="0 0 0.1" extent="10.0" meansize="0.04"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba force="1 0 0 1" haze="0.15 0.25 0.35 1" fog="0.75 0.75 0.75 1" rangefinder="1 1 0 0.10"/>
+    <global azimuth="135" elevation="-25" offwidth="1920" offheight="1080"/>
+    <map force="0.005"/>
+    <scale forcewidth="0.25" contactwidth="0.4" contactheight="0.15" framelength="5.0" framewidth="0.3"/>
+    <quality shadowsize="8192"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.71 0.71 0.71" rgb2="0.71 0.71 0.71" width="800" height="800"/>
+    <texture name="grey_squares" builtin="checker" height="800" width="800" rgb1="0.71 0.71 0.71" rgb2="0.71 0.71 0.71" type="2d" mark="edge" markrgb="1 1 1"/>
+    <material name="floor" reflectance="0.2" texrepeat="1 1" texuniform="true" texture="grey_squares"/>
+    <material name="red_humanoid_body_material" rgba=".7 .1 .1 1" specular="0.9" shininess="0.8"/>
+    <material name="blue_humanoid_body_material" rgba=".1 .1 .7 1" specular="0.9" shininess="0.8"/>
+  </asset>
+
+  <default>
+    <default class="red_humanoid">
+      <geom type="capsule" material="red_humanoid_body_material" density="1000"/>
+    </default>
+    <default class="blue_humanoid">
+      <geom type="capsule" material="blue_humanoid_body_material" density="1000"/>
+    </default>
+    <default class="visual">
+      <geom group="2" density="0" contype="0" conaffinity="0"/>
+    </default>
+    <joint damping="0" frictionloss="0.175" limited="true"/>
+    <position ctrllimited="true" inheritrange="1" forcelimited="true"/>
+
+    <default class="humanoid_arm">
+      <joint armature="0.003"/>
+      <position kp="14.251" kv="0.454" forcerange="-25 25"/>
+    </default>
+    <default class="humanoid_hip_pitch_yaw">
+      <joint armature="0.010"/>
+      <position kp="40.179" kv="1.278" forcerange="-88 88"/>
+      <default class="humanoid_leg_hip_pitch_yaw">
+        <position kv="2.558"/>
+      </default>
+    </default>
+    <default class="humanoid_hip_roll_knee">
+      <joint armature="0.0251"/>
+      <position kp="99.098" kv="6.309" forcerange="-139 139"/>
+    </default>
+    <default class="humanoid_waist_pitch_roll">
+      <joint armature="0.007"/>
+      <position kp="28.501" kv="0.907" forcerange="-50 50"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <geom name="floor" pos="0 0 0" size="50 50 0.110" friction="1 0.5 0.5" type="plane" material="floor"/>
+    <site name="sumo_arena" type="cylinder" pos="0 0 0.006" size="2 0.005" rgba="0.3 0.85 0.9 1"/>
+    <camera name="default" mode="fixed" pos="0 -8 6" xyaxes="1 0 0 0 0.6 0.8" fovy="45"/>
+
+    <!-- Red humanoid -->
+    <body name="red_humanoid" childclass="red_humanoid" pos="-1 0 1.40">
+      <light pos="0 0 2" mode="trackcom"/>
+      <site name="red_humanoid_imu" quat="1.0 0.0 0.0 0.0" pos="0.0 0.0 0.0" />
+      <camera name="red_humanoid_camera" mode="trackcom" pos="-3.022 0.677 0.067" xyaxes="-0.207 -0.978 -0.000 0.171 -0.036 0.985"/>
+      <site name="red_humanoid" size="0.01" pos="0 0 0"/>
+
+      <site name="red_humanoid_ray_r0_c0" pos="0.10 0 0.19" zaxis="0.75000000 -0.43301270 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r0_c1" pos="0.10 0 0.19" zaxis="0.80616031 -0.31639461 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r0_c2" pos="0.10 0 0.19" zaxis="0.84431234 -0.19270878 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r0_c3" pos="0.10 0 0.19" zaxis="0.86360382 -0.06471816 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r0_c4" pos="0.10 0 0.19" zaxis="0.86360382 0.06471816 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r0_c5" pos="0.10 0 0.19" zaxis="0.84431234 0.19270878 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r0_c6" pos="0.10 0 0.19" zaxis="0.80616031 0.31639461 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r0_c7" pos="0.10 0 0.19" zaxis="0.75000000 0.43301270 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r1_c0" pos="0.10 0 0.19" zaxis="0.80616031 -0.46543687 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r1_c1" pos="0.10 0 0.19" zaxis="0.86652594 -0.34008637 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r1_c2" pos="0.10 0 0.19" zaxis="0.90753480 -0.20713890 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r1_c3" pos="0.10 0 0.19" zaxis="0.92827084 -0.06956428 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r1_c4" pos="0.10 0 0.19" zaxis="0.92827084 0.06956428 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r1_c5" pos="0.10 0 0.19" zaxis="0.90753480 0.20713890 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r1_c6" pos="0.10 0 0.19" zaxis="0.86652594 0.34008637 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r1_c7" pos="0.10 0 0.19" zaxis="0.80616031 0.46543687 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r2_c0" pos="0.10 0 0.19" zaxis="0.84431234 -0.48746396 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r2_c1" pos="0.10 0 0.19" zaxis="0.90753480 -0.35618116 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r2_c2" pos="0.10 0 0.19" zaxis="0.95048443 -0.21694187 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r2_c3" pos="0.10 0 0.19" zaxis="0.97220182 -0.07285645 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r2_c4" pos="0.10 0 0.19" zaxis="0.97220182 0.07285645 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r2_c5" pos="0.10 0 0.19" zaxis="0.95048443 0.21694187 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r2_c6" pos="0.10 0 0.19" zaxis="0.90753480 0.35618116 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r2_c7" pos="0.10 0 0.19" zaxis="0.84431234 0.48746396 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r3_c0" pos="0.10 0 0.19" zaxis="0.86360382 -0.49860190 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r3_c1" pos="0.10 0 0.19" zaxis="0.92827084 -0.36431946 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r3_c2" pos="0.10 0 0.19" zaxis="0.97220182 -0.22189872 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r3_c3" pos="0.10 0 0.19" zaxis="0.99441541 -0.07452113 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r3_c4" pos="0.10 0 0.19" zaxis="0.99441541 0.07452113 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r3_c5" pos="0.10 0 0.19" zaxis="0.97220182 0.22189872 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r3_c6" pos="0.10 0 0.19" zaxis="0.92827084 0.36431946 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r3_c7" pos="0.10 0 0.19" zaxis="0.86360382 0.49860190 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r4_c0" pos="0.10 0 0.19" zaxis="0.86360382 -0.49860190 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r4_c1" pos="0.10 0 0.19" zaxis="0.92827084 -0.36431946 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r4_c2" pos="0.10 0 0.19" zaxis="0.97220182 -0.22189872 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r4_c3" pos="0.10 0 0.19" zaxis="0.99441541 -0.07452113 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r4_c4" pos="0.10 0 0.19" zaxis="0.99441541 0.07452113 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r4_c5" pos="0.10 0 0.19" zaxis="0.97220182 0.22189872 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r4_c6" pos="0.10 0 0.19" zaxis="0.92827084 0.36431946 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r4_c7" pos="0.10 0 0.19" zaxis="0.86360382 0.49860190 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r5_c0" pos="0.10 0 0.19" zaxis="0.84431234 -0.48746396 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r5_c1" pos="0.10 0 0.19" zaxis="0.90753480 -0.35618116 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r5_c2" pos="0.10 0 0.19" zaxis="0.95048443 -0.21694187 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r5_c3" pos="0.10 0 0.19" zaxis="0.97220182 -0.07285645 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r5_c4" pos="0.10 0 0.19" zaxis="0.97220182 0.07285645 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r5_c5" pos="0.10 0 0.19" zaxis="0.95048443 0.21694187 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r5_c6" pos="0.10 0 0.19" zaxis="0.90753480 0.35618116 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r5_c7" pos="0.10 0 0.19" zaxis="0.84431234 0.48746396 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r6_c0" pos="0.10 0 0.19" zaxis="0.80616031 -0.46543687 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r6_c1" pos="0.10 0 0.19" zaxis="0.86652594 -0.34008637 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r6_c2" pos="0.10 0 0.19" zaxis="0.90753480 -0.20713890 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r6_c3" pos="0.10 0 0.19" zaxis="0.92827084 -0.06956428 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r6_c4" pos="0.10 0 0.19" zaxis="0.92827084 0.06956428 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r6_c5" pos="0.10 0 0.19" zaxis="0.90753480 0.20713890 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r6_c6" pos="0.10 0 0.19" zaxis="0.86652594 0.34008637 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r6_c7" pos="0.10 0 0.19" zaxis="0.80616031 0.46543687 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r7_c0" pos="0.10 0 0.19" zaxis="0.75000000 -0.43301270 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r7_c1" pos="0.10 0 0.19" zaxis="0.80616031 -0.31639461 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r7_c2" pos="0.10 0 0.19" zaxis="0.84431234 -0.19270878 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r7_c3" pos="0.10 0 0.19" zaxis="0.86360382 -0.06471816 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r7_c4" pos="0.10 0 0.19" zaxis="0.86360382 0.06471816 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r7_c5" pos="0.10 0 0.19" zaxis="0.84431234 0.19270878 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r7_c6" pos="0.10 0 0.19" zaxis="0.80616031 0.31639461 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="red_humanoid_ray_r7_c7" pos="0.10 0 0.19" zaxis="0.75000000 0.43301270 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+
+      <joint name="red_humanoid_root" type="free" armature="0" damping="0" frictionloss="0" limited="false" pos="0 0 0" stiffness="0"/>
+      <geom name="red_humanoid_torso" fromto="0 -.07 0 0 .07 0" size="0.07" type="capsule"/>
+      <geom name="red_humanoid_head" pos="0 0 .19" size=".09" type="sphere"/>
+      <geom name="red_humanoid_uwaist" fromto="-.01 -.06 -.12 -.01 .06 -.12" size="0.06" type="capsule"/>
+      <body name="red_humanoid_lwaist" pos="-.01 0 -0.260" quat="1.000 0 -0.002 0">
+        <geom name="red_humanoid_lwaist" fromto="0 -.06 0 0 .06 0" size="0.06" type="capsule"/>
+        <joint class="humanoid_hip_pitch_yaw" name="red_humanoid_abdomen_z" axis="0 0 1" pos="0 0 0.065" range="-45 45" type="hinge"/>
+        <joint class="humanoid_waist_pitch_roll" name="red_humanoid_abdomen_y" axis="0 1 0" pos="0 0 0.065" range="-75 30" type="hinge"/>
+        <body name="red_humanoid_pelvis" pos="0 0 -0.165" quat="1.000 0 -0.002 0">
+          <joint class="humanoid_waist_pitch_roll" name="red_humanoid_abdomen_x" axis="1 0 0" pos="0 0 0.1" range="-35 35" type="hinge"/>
+          <geom name="red_humanoid_butt" fromto="-.02 -.07 0 -.02 .07 0" size="0.09" type="capsule"/>
+          <body name="red_humanoid_right_thigh" pos="0 -0.1 -0.04">
+            <joint class="humanoid_hip_roll_knee" name="red_humanoid_right_hip_x" axis="1 0 0" pos="0 0 0" range="-25 5" type="hinge"/>
+            <joint class="humanoid_hip_pitch_yaw" name="red_humanoid_right_hip_z" axis="0 0 1" pos="0 0 0" range="-60 35" type="hinge"/>
+            <joint class="humanoid_hip_pitch_yaw" name="red_humanoid_right_hip_y" axis="0 1 0" pos="0 0 0" range="-110 20" type="hinge"/>
+            <geom name="red_humanoid_right_thigh" fromto="0 0 0 0 0.01 -.34" size="0.06" type="capsule"/>
+            <body name="red_humanoid_right_shin" pos="0 0.01 -0.403">
+              <joint class="humanoid_hip_roll_knee" name="red_humanoid_right_knee" axis="0 -1 0" pos="0 0 .02" range="-160 -2" type="hinge"/>
+              <geom name="red_humanoid_right_shin" fromto="0 0 0 0 0 -.3" size="0.049" type="capsule"/>
+              <body name="red_humanoid_right_foot" pos="0 0 -0.45">
+                <geom name="red_humanoid_right_foot" pos="0 0 0.1" size="0.075" type="sphere"/>
+                <site name="red_humanoid_right_foot" pos="0 0 0.1"/>
+              </body>
+            </body>
+          </body>
+          <body name="red_humanoid_left_thigh" pos="0 0.1 -0.04">
+            <joint class="humanoid_hip_roll_knee" name="red_humanoid_left_hip_x" axis="-1 0 0" pos="0 0 0" range="-25 5" type="hinge"/>
+            <joint class="humanoid_hip_pitch_yaw" name="red_humanoid_left_hip_z" axis="0 0 -1" pos="0 0 0" range="-60 35" type="hinge"/>
+            <joint class="humanoid_hip_pitch_yaw" name="red_humanoid_left_hip_y" axis="0 1 0" pos="0 0 0" range="-110 20" type="hinge"/>
+            <geom name="red_humanoid_left_thigh" fromto="0 0 0 0 -0.01 -.34" size="0.06" type="capsule"/>
+            <body name="red_humanoid_left_shin" pos="0 -0.01 -0.403">
+              <joint class="humanoid_hip_roll_knee" name="red_humanoid_left_knee" axis="0 -1 0" pos="0 0 .02" range="-160 -2" type="hinge"/>
+              <geom name="red_humanoid_left_shin" fromto="0 0 0 0 0 -.3" size="0.049" type="capsule"/>
+              <body name="red_humanoid_left_foot" pos="0 0 -0.45">
+                <geom name="red_humanoid_left_foot" type="sphere" size="0.075" pos="0 0 0.1"/>
+                <site name="red_humanoid_left_foot" pos="0 0 0.1"/>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="red_humanoid_right_upper_arm" pos="0 -0.17 0.06">
+        <joint class="humanoid_arm" name="red_humanoid_right_shoulder1" axis="2 1 1" pos="0 0 0" range="-85 60" type="hinge"/>
+        <joint class="humanoid_arm" name="red_humanoid_right_shoulder2" axis="0 -1 1" pos="0 0 0" range="-85 60" type="hinge"/>
+        <geom name="red_humanoid_right_uarm" fromto="0 0 0 .16 -.16 -.16" size="0.04 0.16" type="capsule"/>
+        <body name="red_humanoid_right_lower_arm" pos=".18 -.18 -.18">
+          <joint class="humanoid_arm" name="red_humanoid_right_elbow" axis="0 -1 1" pos="0 0 0" range="-90 50" type="hinge"/>
+          <geom name="red_humanoid_right_larm" fromto="0.01 0.01 0.01 .17 .17 .17" size="0.031" type="capsule"/>
+          <geom name="red_humanoid_right_hand" pos=".18 .18 .18" size="0.04" type="sphere"/>
+        </body>
+      </body>
+      <body name="red_humanoid_left_upper_arm" pos="0 0.17 0.06">
+        <joint class="humanoid_arm" name="red_humanoid_left_shoulder1" axis="2 -1 1" pos="0 0 0" range="-60 85" type="hinge"/>
+        <joint class="humanoid_arm" name="red_humanoid_left_shoulder2" axis="0 1 1" pos="0 0 0" range="-60 85" type="hinge"/>
+        <geom name="red_humanoid_left_uarm" fromto="0 0 0 .16 .16 -.16" size="0.04 0.16" type="capsule"/>
+        <body name="red_humanoid_left_lower_arm" pos=".18 .18 -.18">
+          <joint class="humanoid_arm" name="red_humanoid_left_elbow" axis="0 -1 -1" pos="0 0 0" range="-90 50" type="hinge"/>
+          <geom name="red_humanoid_left_larm" fromto="0.01 -0.01 0.01 .17 -.17 .17" size="0.031" type="capsule"/>
+          <geom name="red_humanoid_left_hand" pos=".18 -.18 .18" size="0.04" type="sphere"/>
+        </body>
+      </body>
+    </body>
+
+    <!-- Blue humanoid -->
+    <body name="blue_humanoid" childclass="blue_humanoid" pos="1 0 1.40">
+      <light pos="0 0 2" mode="trackcom"/>
+      <site name="blue_humanoid_imu" quat="1.0 0.0 0.0 0.0" pos="0.0 0.0 0.0" />
+      <camera name="blue_humanoid_camera" mode="trackcom" pos="-3.022 0.677 0.067" xyaxes="-0.207 -0.978 -0.000 0.171 -0.036 0.985"/>
+      <site name="blue_humanoid" size="0.01" pos="0 0 0"/>
+
+      <site name="blue_humanoid_ray_r0_c0" pos="0.10 0 0.19" zaxis="0.75000000 -0.43301270 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r0_c1" pos="0.10 0 0.19" zaxis="0.80616031 -0.31639461 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r0_c2" pos="0.10 0 0.19" zaxis="0.84431234 -0.19270878 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r0_c3" pos="0.10 0 0.19" zaxis="0.86360382 -0.06471816 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r0_c4" pos="0.10 0 0.19" zaxis="0.86360382 0.06471816 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r0_c5" pos="0.10 0 0.19" zaxis="0.84431234 0.19270878 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r0_c6" pos="0.10 0 0.19" zaxis="0.80616031 0.31639461 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r0_c7" pos="0.10 0 0.19" zaxis="0.75000000 0.43301270 0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r1_c0" pos="0.10 0 0.19" zaxis="0.80616031 -0.46543687 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r1_c1" pos="0.10 0 0.19" zaxis="0.86652594 -0.34008637 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r1_c2" pos="0.10 0 0.19" zaxis="0.90753480 -0.20713890 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r1_c3" pos="0.10 0 0.19" zaxis="0.92827084 -0.06956428 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r1_c4" pos="0.10 0 0.19" zaxis="0.92827084 0.06956428 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r1_c5" pos="0.10 0 0.19" zaxis="0.90753480 0.20713890 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r1_c6" pos="0.10 0 0.19" zaxis="0.86652594 0.34008637 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r1_c7" pos="0.10 0 0.19" zaxis="0.80616031 0.46543687 0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r2_c0" pos="0.10 0 0.19" zaxis="0.84431234 -0.48746396 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r2_c1" pos="0.10 0 0.19" zaxis="0.90753480 -0.35618116 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r2_c2" pos="0.10 0 0.19" zaxis="0.95048443 -0.21694187 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r2_c3" pos="0.10 0 0.19" zaxis="0.97220182 -0.07285645 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r2_c4" pos="0.10 0 0.19" zaxis="0.97220182 0.07285645 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r2_c5" pos="0.10 0 0.19" zaxis="0.95048443 0.21694187 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r2_c6" pos="0.10 0 0.19" zaxis="0.90753480 0.35618116 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r2_c7" pos="0.10 0 0.19" zaxis="0.84431234 0.48746396 0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r3_c0" pos="0.10 0 0.19" zaxis="0.86360382 -0.49860190 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r3_c1" pos="0.10 0 0.19" zaxis="0.92827084 -0.36431946 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r3_c2" pos="0.10 0 0.19" zaxis="0.97220182 -0.22189872 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r3_c3" pos="0.10 0 0.19" zaxis="0.99441541 -0.07452113 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r3_c4" pos="0.10 0 0.19" zaxis="0.99441541 0.07452113 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r3_c5" pos="0.10 0 0.19" zaxis="0.97220182 0.22189872 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r3_c6" pos="0.10 0 0.19" zaxis="0.92827084 0.36431946 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r3_c7" pos="0.10 0 0.19" zaxis="0.86360382 0.49860190 0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r4_c0" pos="0.10 0 0.19" zaxis="0.86360382 -0.49860190 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r4_c1" pos="0.10 0 0.19" zaxis="0.92827084 -0.36431946 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r4_c2" pos="0.10 0 0.19" zaxis="0.97220182 -0.22189872 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r4_c3" pos="0.10 0 0.19" zaxis="0.99441541 -0.07452113 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r4_c4" pos="0.10 0 0.19" zaxis="0.99441541 0.07452113 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r4_c5" pos="0.10 0 0.19" zaxis="0.97220182 0.22189872 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r4_c6" pos="0.10 0 0.19" zaxis="0.92827084 0.36431946 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r4_c7" pos="0.10 0 0.19" zaxis="0.86360382 0.49860190 -0.07473009" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r5_c0" pos="0.10 0 0.19" zaxis="0.84431234 -0.48746396 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r5_c1" pos="0.10 0 0.19" zaxis="0.90753480 -0.35618116 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r5_c2" pos="0.10 0 0.19" zaxis="0.95048443 -0.21694187 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r5_c3" pos="0.10 0 0.19" zaxis="0.97220182 -0.07285645 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r5_c4" pos="0.10 0 0.19" zaxis="0.97220182 0.07285645 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r5_c5" pos="0.10 0 0.19" zaxis="0.95048443 0.21694187 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r5_c6" pos="0.10 0 0.19" zaxis="0.90753480 0.35618116 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r5_c7" pos="0.10 0 0.19" zaxis="0.84431234 0.48746396 -0.22252093" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r6_c0" pos="0.10 0 0.19" zaxis="0.80616031 -0.46543687 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r6_c1" pos="0.10 0 0.19" zaxis="0.86652594 -0.34008637 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r6_c2" pos="0.10 0 0.19" zaxis="0.90753480 -0.20713890 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r6_c3" pos="0.10 0 0.19" zaxis="0.92827084 -0.06956428 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r6_c4" pos="0.10 0 0.19" zaxis="0.92827084 0.06956428 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r6_c5" pos="0.10 0 0.19" zaxis="0.90753480 0.20713890 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r6_c6" pos="0.10 0 0.19" zaxis="0.86652594 0.34008637 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r6_c7" pos="0.10 0 0.19" zaxis="0.80616031 0.46543687 -0.36534102" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r7_c0" pos="0.10 0 0.19" zaxis="0.75000000 -0.43301270 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r7_c1" pos="0.10 0 0.19" zaxis="0.80616031 -0.31639461 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r7_c2" pos="0.10 0 0.19" zaxis="0.84431234 -0.19270878 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r7_c3" pos="0.10 0 0.19" zaxis="0.86360382 -0.06471816 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r7_c4" pos="0.10 0 0.19" zaxis="0.86360382 0.06471816 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r7_c5" pos="0.10 0 0.19" zaxis="0.84431234 0.19270878 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r7_c6" pos="0.10 0 0.19" zaxis="0.80616031 0.31639461 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+      <site name="blue_humanoid_ray_r7_c7" pos="0.10 0 0.19" zaxis="0.75000000 0.43301270 -0.50000000" size="0.003" rgba="1 1 0 0.10"/>
+
+      <joint name="blue_humanoid_root" type="free" armature="0" damping="0" frictionloss="0" limited="false" pos="0 0 0" stiffness="0"/>
+      <geom name="blue_humanoid_torso" fromto="0 -.07 0 0 .07 0" size="0.07" type="capsule"/>
+      <geom name="blue_humanoid_head" pos="0 0 .19" size=".09" type="sphere"/>
+      <geom name="blue_humanoid_uwaist" fromto="-.01 -.06 -.12 -.01 .06 -.12" size="0.06" type="capsule"/>
+      <body name="blue_humanoid_lwaist" pos="-.01 0 -0.260" quat="1.000 0 -0.002 0">
+        <geom name="blue_humanoid_lwaist" fromto="0 -.06 0 0 .06 0" size="0.06" type="capsule"/>
+        <joint class="humanoid_hip_pitch_yaw" name="blue_humanoid_abdomen_z" axis="0 0 1" pos="0 0 0.065" range="-45 45" type="hinge"/>
+        <joint class="humanoid_waist_pitch_roll" name="blue_humanoid_abdomen_y" axis="0 1 0" pos="0 0 0.065" range="-75 30" type="hinge"/>
+        <body name="blue_humanoid_pelvis" pos="0 0 -0.165" quat="1.000 0 -0.002 0">
+          <joint class="humanoid_waist_pitch_roll" name="blue_humanoid_abdomen_x" axis="1 0 0" pos="0 0 0.1" range="-35 35" type="hinge"/>
+          <geom name="blue_humanoid_butt" fromto="-.02 -.07 0 -.02 .07 0" size="0.09" type="capsule"/>
+          <body name="blue_humanoid_right_thigh" pos="0 -0.1 -0.04">
+            <joint class="humanoid_hip_roll_knee" name="blue_humanoid_right_hip_x" axis="1 0 0" pos="0 0 0" range="-25 5" type="hinge"/>
+            <joint class="humanoid_hip_pitch_yaw" name="blue_humanoid_right_hip_z" axis="0 0 1" pos="0 0 0" range="-60 35" type="hinge"/>
+            <joint class="humanoid_hip_pitch_yaw" name="blue_humanoid_right_hip_y" axis="0 1 0" pos="0 0 0" range="-110 20" type="hinge"/>
+            <geom name="blue_humanoid_right_thigh" fromto="0 0 0 0 0.01 -.34" size="0.06" type="capsule"/>
+            <body name="blue_humanoid_right_shin" pos="0 0.01 -0.403">
+              <joint class="humanoid_hip_roll_knee" name="blue_humanoid_right_knee" axis="0 -1 0" pos="0 0 .02" range="-160 -2" type="hinge"/>
+              <geom name="blue_humanoid_right_shin" fromto="0 0 0 0 0 -.3" size="0.049" type="capsule"/>
+              <body name="blue_humanoid_right_foot" pos="0 0 -0.45">
+                <geom name="blue_humanoid_right_foot" pos="0 0 0.1" size="0.075" type="sphere"/>
+                <site name="blue_humanoid_right_foot" pos="0 0 0.1"/>
+              </body>
+            </body>
+          </body>
+          <body name="blue_humanoid_left_thigh" pos="0 0.1 -0.04">
+            <joint class="humanoid_hip_roll_knee" name="blue_humanoid_left_hip_x" axis="-1 0 0" pos="0 0 0" range="-25 5" type="hinge"/>
+            <joint class="humanoid_hip_pitch_yaw" name="blue_humanoid_left_hip_z" axis="0 0 -1" pos="0 0 0" range="-60 35" type="hinge"/>
+            <joint class="humanoid_hip_pitch_yaw" name="blue_humanoid_left_hip_y" axis="0 1 0" pos="0 0 0" range="-110 20" type="hinge"/>
+            <geom name="blue_humanoid_left_thigh" fromto="0 0 0 0 -0.01 -.34" size="0.06" type="capsule"/>
+            <body name="blue_humanoid_left_shin" pos="0 -0.01 -0.403">
+              <joint class="humanoid_hip_roll_knee" name="blue_humanoid_left_knee" axis="0 -1 0" pos="0 0 .02" range="-160 -2" type="hinge"/>
+              <geom name="blue_humanoid_left_shin" fromto="0 0 0 0 0 -.3" size="0.049" type="capsule"/>
+              <body name="blue_humanoid_left_foot" pos="0 0 -0.45">
+                <geom name="blue_humanoid_left_foot" type="sphere" size="0.075" pos="0 0 0.1"/>
+                <site name="blue_humanoid_left_foot" pos="0 0 0.1"/>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="blue_humanoid_right_upper_arm" pos="0 -0.17 0.06">
+        <joint class="humanoid_arm" name="blue_humanoid_right_shoulder1" axis="2 1 1" pos="0 0 0" range="-85 60" type="hinge"/>
+        <joint class="humanoid_arm" name="blue_humanoid_right_shoulder2" axis="0 -1 1" pos="0 0 0" range="-85 60" type="hinge"/>
+        <geom name="blue_humanoid_right_uarm" fromto="0 0 0 .16 -.16 -.16" size="0.04 0.16" type="capsule"/>
+        <body name="blue_humanoid_right_lower_arm" pos=".18 -.18 -.18">
+          <joint class="humanoid_arm" name="blue_humanoid_right_elbow" axis="0 -1 1" pos="0 0 0" range="-90 50" type="hinge"/>
+          <geom name="blue_humanoid_right_larm" fromto="0.01 0.01 0.01 .17 .17 .17" size="0.031" type="capsule"/>
+          <geom name="blue_humanoid_right_hand" pos=".18 .18 .18" size="0.04" type="sphere"/>
+        </body>
+      </body>
+      <body name="blue_humanoid_left_upper_arm" pos="0 0.17 0.06">
+        <joint class="humanoid_arm" name="blue_humanoid_left_shoulder1" axis="2 -1 1" pos="0 0 0" range="-60 85" type="hinge"/>
+        <joint class="humanoid_arm" name="blue_humanoid_left_shoulder2" axis="0 1 1" pos="0 0 0" range="-60 85" type="hinge"/>
+        <geom name="blue_humanoid_left_uarm" fromto="0 0 0 .16 .16 -.16" size="0.04 0.16" type="capsule"/>
+        <body name="blue_humanoid_left_lower_arm" pos=".18 .18 -.18">
+          <joint class="humanoid_arm" name="blue_humanoid_left_elbow" axis="0 -1 -1" pos="0 0 0" range="-90 50" type="hinge"/>
+          <geom name="blue_humanoid_left_larm" fromto="0.01 -0.01 0.01 .17 -.17 .17" size="0.031" type="capsule"/>
+          <geom name="blue_humanoid_left_hand" pos=".18 -.18 .18" size="0.04" type="sphere"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <sensor>
+
+    <contact name="humanoid_contact" subtree1="red_humanoid" subtree2="blue_humanoid" num="1" data="found"/>
+
+    <!-- Blue humanoid sensors -->
+    <gyro name="red_humanoid_gyro" site="red_humanoid_imu" noise="0.01" />
+    <accelerometer name="red_humanoid_accelerometer" site="red_humanoid_imu" noise="0.01" />
+    <velocimeter name="red_humanoid_local_linvel" site="red_humanoid_imu" />
+    <frameangvel name="red_humanoid_global_angvel" objtype="site" objname="red_humanoid_imu" />
+    <framelinvel name="red_humanoid_global_linvel" objtype="site" objname="red_humanoid_imu" />
+    <framezaxis name="red_humanoid_gravity" objtype="site" objname="red_humanoid_imu"/>
+    <contact name="red_humanoid_left_foot_floor_contact" geom1="red_humanoid_left_foot" geom2="floor" reduce="mindist" num="1" data="found"/>
+    <contact name="red_humanoid_right_foot_floor_contact" geom1="red_humanoid_right_foot" geom2="floor" reduce="mindist" num="1" data="found"/>
+
+    <contact name="red_humanoid_torso_contact_force" geom1="red_humanoid_torso" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_head_contact_force" geom1="red_humanoid_head" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_uwaist_contact_force" geom1="red_humanoid_uwaist" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_lwaist_contact_force" geom1="red_humanoid_lwaist" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_butt_contact_force" geom1="red_humanoid_butt" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_right_thigh_contact_force" geom1="red_humanoid_right_thigh" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_right_shin_contact_force" geom1="red_humanoid_right_shin" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_right_foot_contact_force" geom1="red_humanoid_right_foot" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_left_thigh_contact_force" geom1="red_humanoid_left_thigh" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_left_shin_contact_force" geom1="red_humanoid_left_shin" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_left_foot_contact_force" geom1="red_humanoid_left_foot" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_right_uarm_contact_force" geom1="red_humanoid_right_uarm" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_right_larm_contact_force" geom1="red_humanoid_right_larm" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_right_hand_contact_force" geom1="red_humanoid_right_hand" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_left_uarm_contact_force" geom1="red_humanoid_left_uarm" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_left_larm_contact_force" geom1="red_humanoid_left_larm" reduce="netforce" num="1" data="force"/>
+    <contact name="red_humanoid_left_hand_contact_force" geom1="red_humanoid_left_hand" reduce="netforce" num="1" data="force"/>
+
+    <rangefinder name="red_humanoid_ray_r0_c0" site="red_humanoid_ray_r0_c0" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r0_c1" site="red_humanoid_ray_r0_c1" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r0_c2" site="red_humanoid_ray_r0_c2" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r0_c3" site="red_humanoid_ray_r0_c3" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r0_c4" site="red_humanoid_ray_r0_c4" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r0_c5" site="red_humanoid_ray_r0_c5" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r0_c6" site="red_humanoid_ray_r0_c6" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r0_c7" site="red_humanoid_ray_r0_c7" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r1_c0" site="red_humanoid_ray_r1_c0" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r1_c1" site="red_humanoid_ray_r1_c1" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r1_c2" site="red_humanoid_ray_r1_c2" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r1_c3" site="red_humanoid_ray_r1_c3" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r1_c4" site="red_humanoid_ray_r1_c4" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r1_c5" site="red_humanoid_ray_r1_c5" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r1_c6" site="red_humanoid_ray_r1_c6" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r1_c7" site="red_humanoid_ray_r1_c7" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r2_c0" site="red_humanoid_ray_r2_c0" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r2_c1" site="red_humanoid_ray_r2_c1" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r2_c2" site="red_humanoid_ray_r2_c2" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r2_c3" site="red_humanoid_ray_r2_c3" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r2_c4" site="red_humanoid_ray_r2_c4" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r2_c5" site="red_humanoid_ray_r2_c5" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r2_c6" site="red_humanoid_ray_r2_c6" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r2_c7" site="red_humanoid_ray_r2_c7" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r3_c0" site="red_humanoid_ray_r3_c0" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r3_c1" site="red_humanoid_ray_r3_c1" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r3_c2" site="red_humanoid_ray_r3_c2" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r3_c3" site="red_humanoid_ray_r3_c3" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r3_c4" site="red_humanoid_ray_r3_c4" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r3_c5" site="red_humanoid_ray_r3_c5" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r3_c6" site="red_humanoid_ray_r3_c6" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r3_c7" site="red_humanoid_ray_r3_c7" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r4_c0" site="red_humanoid_ray_r4_c0" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r4_c1" site="red_humanoid_ray_r4_c1" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r4_c2" site="red_humanoid_ray_r4_c2" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r4_c3" site="red_humanoid_ray_r4_c3" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r4_c4" site="red_humanoid_ray_r4_c4" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r4_c5" site="red_humanoid_ray_r4_c5" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r4_c6" site="red_humanoid_ray_r4_c6" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r4_c7" site="red_humanoid_ray_r4_c7" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r5_c0" site="red_humanoid_ray_r5_c0" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r5_c1" site="red_humanoid_ray_r5_c1" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r5_c2" site="red_humanoid_ray_r5_c2" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r5_c3" site="red_humanoid_ray_r5_c3" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r5_c4" site="red_humanoid_ray_r5_c4" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r5_c5" site="red_humanoid_ray_r5_c5" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r5_c6" site="red_humanoid_ray_r5_c6" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r5_c7" site="red_humanoid_ray_r5_c7" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r6_c0" site="red_humanoid_ray_r6_c0" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r6_c1" site="red_humanoid_ray_r6_c1" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r6_c2" site="red_humanoid_ray_r6_c2" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r6_c3" site="red_humanoid_ray_r6_c3" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r6_c4" site="red_humanoid_ray_r6_c4" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r6_c5" site="red_humanoid_ray_r6_c5" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r6_c6" site="red_humanoid_ray_r6_c6" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r6_c7" site="red_humanoid_ray_r6_c7" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r7_c0" site="red_humanoid_ray_r7_c0" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r7_c1" site="red_humanoid_ray_r7_c1" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r7_c2" site="red_humanoid_ray_r7_c2" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r7_c3" site="red_humanoid_ray_r7_c3" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r7_c4" site="red_humanoid_ray_r7_c4" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r7_c5" site="red_humanoid_ray_r7_c5" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r7_c6" site="red_humanoid_ray_r7_c6" data="dist"/>
+    <rangefinder name="red_humanoid_ray_r7_c7" site="red_humanoid_ray_r7_c7" data="dist"/>
+
+    <!-- Blue humanoid sensors -->
+    <gyro name="blue_humanoid_gyro" site="blue_humanoid_imu" noise="0.01" />
+    <accelerometer name="blue_humanoid_accelerometer" site="blue_humanoid_imu" noise="0.01" />
+    <velocimeter name="blue_humanoid_local_linvel" site="blue_humanoid_imu" />
+    <frameangvel name="blue_humanoid_global_angvel" objtype="site" objname="blue_humanoid_imu" />
+    <framelinvel name="blue_humanoid_global_linvel" objtype="site" objname="blue_humanoid_imu" />
+    <framezaxis name="blue_humanoid_gravity" objtype="site" objname="blue_humanoid_imu"/>
+    <contact name="blue_humanoid_left_foot_floor_contact" geom1="blue_humanoid_left_foot" geom2="floor" reduce="mindist" num="1" data="found"/>
+    <contact name="blue_humanoid_right_foot_floor_contact" geom1="blue_humanoid_right_foot" geom2="floor" reduce="mindist" num="1" data="found"/>
+
+    <contact name="blue_humanoid_torso_contact_force" geom1="blue_humanoid_torso" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_head_contact_force" geom1="blue_humanoid_head" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_uwaist_contact_force" geom1="blue_humanoid_uwaist" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_lwaist_contact_force" geom1="blue_humanoid_lwaist" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_butt_contact_force" geom1="blue_humanoid_butt" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_right_thigh_contact_force" geom1="blue_humanoid_right_thigh" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_right_shin_contact_force" geom1="blue_humanoid_right_shin" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_right_foot_contact_force" geom1="blue_humanoid_right_foot" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_left_thigh_contact_force" geom1="blue_humanoid_left_thigh" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_left_shin_contact_force" geom1="blue_humanoid_left_shin" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_left_foot_contact_force" geom1="blue_humanoid_left_foot" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_right_uarm_contact_force" geom1="blue_humanoid_right_uarm" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_right_larm_contact_force" geom1="blue_humanoid_right_larm" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_right_hand_contact_force" geom1="blue_humanoid_right_hand" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_left_uarm_contact_force" geom1="blue_humanoid_left_uarm" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_left_larm_contact_force" geom1="blue_humanoid_left_larm" reduce="netforce" num="1" data="force"/>
+    <contact name="blue_humanoid_left_hand_contact_force" geom1="blue_humanoid_left_hand" reduce="netforce" num="1" data="force"/>
+
+    <rangefinder name="blue_humanoid_ray_r0_c0" site="blue_humanoid_ray_r0_c0" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r0_c1" site="blue_humanoid_ray_r0_c1" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r0_c2" site="blue_humanoid_ray_r0_c2" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r0_c3" site="blue_humanoid_ray_r0_c3" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r0_c4" site="blue_humanoid_ray_r0_c4" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r0_c5" site="blue_humanoid_ray_r0_c5" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r0_c6" site="blue_humanoid_ray_r0_c6" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r0_c7" site="blue_humanoid_ray_r0_c7" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r1_c0" site="blue_humanoid_ray_r1_c0" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r1_c1" site="blue_humanoid_ray_r1_c1" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r1_c2" site="blue_humanoid_ray_r1_c2" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r1_c3" site="blue_humanoid_ray_r1_c3" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r1_c4" site="blue_humanoid_ray_r1_c4" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r1_c5" site="blue_humanoid_ray_r1_c5" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r1_c6" site="blue_humanoid_ray_r1_c6" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r1_c7" site="blue_humanoid_ray_r1_c7" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r2_c0" site="blue_humanoid_ray_r2_c0" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r2_c1" site="blue_humanoid_ray_r2_c1" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r2_c2" site="blue_humanoid_ray_r2_c2" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r2_c3" site="blue_humanoid_ray_r2_c3" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r2_c4" site="blue_humanoid_ray_r2_c4" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r2_c5" site="blue_humanoid_ray_r2_c5" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r2_c6" site="blue_humanoid_ray_r2_c6" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r2_c7" site="blue_humanoid_ray_r2_c7" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r3_c0" site="blue_humanoid_ray_r3_c0" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r3_c1" site="blue_humanoid_ray_r3_c1" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r3_c2" site="blue_humanoid_ray_r3_c2" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r3_c3" site="blue_humanoid_ray_r3_c3" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r3_c4" site="blue_humanoid_ray_r3_c4" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r3_c5" site="blue_humanoid_ray_r3_c5" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r3_c6" site="blue_humanoid_ray_r3_c6" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r3_c7" site="blue_humanoid_ray_r3_c7" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r4_c0" site="blue_humanoid_ray_r4_c0" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r4_c1" site="blue_humanoid_ray_r4_c1" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r4_c2" site="blue_humanoid_ray_r4_c2" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r4_c3" site="blue_humanoid_ray_r4_c3" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r4_c4" site="blue_humanoid_ray_r4_c4" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r4_c5" site="blue_humanoid_ray_r4_c5" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r4_c6" site="blue_humanoid_ray_r4_c6" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r4_c7" site="blue_humanoid_ray_r4_c7" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r5_c0" site="blue_humanoid_ray_r5_c0" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r5_c1" site="blue_humanoid_ray_r5_c1" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r5_c2" site="blue_humanoid_ray_r5_c2" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r5_c3" site="blue_humanoid_ray_r5_c3" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r5_c4" site="blue_humanoid_ray_r5_c4" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r5_c5" site="blue_humanoid_ray_r5_c5" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r5_c6" site="blue_humanoid_ray_r5_c6" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r5_c7" site="blue_humanoid_ray_r5_c7" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r6_c0" site="blue_humanoid_ray_r6_c0" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r6_c1" site="blue_humanoid_ray_r6_c1" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r6_c2" site="blue_humanoid_ray_r6_c2" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r6_c3" site="blue_humanoid_ray_r6_c3" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r6_c4" site="blue_humanoid_ray_r6_c4" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r6_c5" site="blue_humanoid_ray_r6_c5" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r6_c6" site="blue_humanoid_ray_r6_c6" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r6_c7" site="blue_humanoid_ray_r6_c7" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r7_c0" site="blue_humanoid_ray_r7_c0" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r7_c1" site="blue_humanoid_ray_r7_c1" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r7_c2" site="blue_humanoid_ray_r7_c2" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r7_c3" site="blue_humanoid_ray_r7_c3" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r7_c4" site="blue_humanoid_ray_r7_c4" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r7_c5" site="blue_humanoid_ray_r7_c5" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r7_c6" site="blue_humanoid_ray_r7_c6" data="dist"/>
+    <rangefinder name="blue_humanoid_ray_r7_c7" site="blue_humanoid_ray_r7_c7" data="dist"/>
+  </sensor>
+
+  <actuator>
+    <position class="humanoid_waist_pitch_roll" joint="red_humanoid_abdomen_y" name="red_humanoid_abdomen_y"/>
+    <position class="humanoid_hip_pitch_yaw" joint="red_humanoid_abdomen_z" name="red_humanoid_abdomen_z"/>
+    <position class="humanoid_waist_pitch_roll" joint="red_humanoid_abdomen_x" name="red_humanoid_abdomen_x"/>
+    <position class="humanoid_hip_roll_knee" joint="red_humanoid_right_hip_x" name="red_humanoid_right_hip_x"/>
+    <position class="humanoid_leg_hip_pitch_yaw" joint="red_humanoid_right_hip_z" name="red_humanoid_right_hip_z"/>
+    <position class="humanoid_leg_hip_pitch_yaw" joint="red_humanoid_right_hip_y" name="red_humanoid_right_hip_y"/>
+    <position class="humanoid_hip_roll_knee" joint="red_humanoid_right_knee" name="red_humanoid_right_knee"/>
+    <position class="humanoid_hip_roll_knee" joint="red_humanoid_left_hip_x" name="red_humanoid_left_hip_x"/>
+    <position class="humanoid_leg_hip_pitch_yaw" joint="red_humanoid_left_hip_z" name="red_humanoid_left_hip_z"/>
+    <position class="humanoid_leg_hip_pitch_yaw" joint="red_humanoid_left_hip_y" name="red_humanoid_left_hip_y"/>
+    <position class="humanoid_hip_roll_knee" joint="red_humanoid_left_knee" name="red_humanoid_left_knee"/>
+    <position class="humanoid_arm" joint="red_humanoid_right_shoulder1" name="red_humanoid_right_shoulder1"/>
+    <position class="humanoid_arm" joint="red_humanoid_right_shoulder2" name="red_humanoid_right_shoulder2"/>
+    <position class="humanoid_arm" joint="red_humanoid_right_elbow" name="red_humanoid_right_elbow"/>
+    <position class="humanoid_arm" joint="red_humanoid_left_shoulder1" name="red_humanoid_left_shoulder1"/>
+    <position class="humanoid_arm" joint="red_humanoid_left_shoulder2" name="red_humanoid_left_shoulder2"/>
+    <position class="humanoid_arm" joint="red_humanoid_left_elbow" name="red_humanoid_left_elbow"/>
+
+    <position class="humanoid_waist_pitch_roll" joint="blue_humanoid_abdomen_y" name="blue_humanoid_abdomen_y"/>
+    <position class="humanoid_hip_pitch_yaw" joint="blue_humanoid_abdomen_z" name="blue_humanoid_abdomen_z"/>
+    <position class="humanoid_waist_pitch_roll" joint="blue_humanoid_abdomen_x" name="blue_humanoid_abdomen_x"/>
+    <position class="humanoid_hip_roll_knee" joint="blue_humanoid_right_hip_x" name="blue_humanoid_right_hip_x"/>
+    <position class="humanoid_leg_hip_pitch_yaw" joint="blue_humanoid_right_hip_z" name="blue_humanoid_right_hip_z"/>
+    <position class="humanoid_leg_hip_pitch_yaw" joint="blue_humanoid_right_hip_y" name="blue_humanoid_right_hip_y"/>
+    <position class="humanoid_hip_roll_knee" joint="blue_humanoid_right_knee" name="blue_humanoid_right_knee"/>
+    <position class="humanoid_hip_roll_knee" joint="blue_humanoid_left_hip_x" name="blue_humanoid_left_hip_x"/>
+    <position class="humanoid_leg_hip_pitch_yaw" joint="blue_humanoid_left_hip_z" name="blue_humanoid_left_hip_z"/>
+    <position class="humanoid_leg_hip_pitch_yaw" joint="blue_humanoid_left_hip_y" name="blue_humanoid_left_hip_y"/>
+    <position class="humanoid_hip_roll_knee" joint="blue_humanoid_left_knee" name="blue_humanoid_left_knee"/>
+    <position class="humanoid_arm" joint="blue_humanoid_right_shoulder1" name="blue_humanoid_right_shoulder1"/>
+    <position class="humanoid_arm" joint="blue_humanoid_right_shoulder2" name="blue_humanoid_right_shoulder2"/>
+    <position class="humanoid_arm" joint="blue_humanoid_right_elbow" name="blue_humanoid_right_elbow"/>
+    <position class="humanoid_arm" joint="blue_humanoid_left_shoulder1" name="blue_humanoid_left_shoulder1"/>
+    <position class="humanoid_arm" joint="blue_humanoid_left_shoulder2" name="blue_humanoid_left_shoulder2"/>
+    <position class="humanoid_arm" joint="blue_humanoid_left_elbow" name="blue_humanoid_left_elbow"/>
+  </actuator>
+
+  <keyframe>
+    <key name="home"
+      qpos="-1 0 1.25 1 0 0 0
+       0 0 0
+       0 0 -0.343 -0.669271
+       0 0 -0.343 -0.669271
+       0.743 -0.669 -0.743
+       -0.743 0.669 -0.743
+       1 0 1.25 0 0 0 1
+       0 0 0
+       0 0 -0.343 -0.669271
+       0 0 -0.343 -0.669271
+       0.743 -0.669 -0.743
+       -0.743 0.669 -0.743"
+    />
+  </keyframe>
+</mujoco>
